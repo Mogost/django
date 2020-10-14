@@ -105,6 +105,14 @@ class PrefetchRelatedObjectsTests(TestCase):
         with self.assertNumQueries(0):
             self.assertCountEqual(book1.the_authors, [self.author1, self.author2, self.author3])
 
+    def test_prefetch_object_to_attr_twice(self):
+        book1 = Book.objects.get(id=self.book1.id)
+        book2 = Book.objects.get(id=self.book2.id)
+        book3 = Book.objects.get(id=self.book3.id)
+        prefetch_related_objects([book1, book2], Prefetch('authors', to_attr='the_authors'))
+        prefetch_related_objects([book1, book3], Prefetch('authors', to_attr='the_authors'))
+        self.assertCountEqual(book3.the_authors, [self.author3])
+
     def test_prefetch_queryset(self):
         book1 = Book.objects.get(id=self.book1.id)
         with self.assertNumQueries(1):
