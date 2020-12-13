@@ -46,10 +46,16 @@ check function::
             )
         return errors
 
-The check function *must* accept an ``app_configs`` argument; this argument is
-the list of applications that should be inspected. If None, the check must be
-run on *all* installed apps in the project. The ``**kwargs`` argument is required
-for future expansion.
+The check function *must* accept an ``app_configs`` argument, which is the list
+of :class:`.AppConfig` objects for the applications to be inspected. If
+``None``, the check must run on *all* apps installed in the project.
+
+The check will also receive a ``databases`` argument, which is a list of
+database aliases whose connections may be used to inspect database level
+configuration. If this is ``None``, the check must not use any database
+connections.
+
+The ``**kwargs`` argument is required for future expansion.
 
 Messages
 --------
