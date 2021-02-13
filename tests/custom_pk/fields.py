@@ -20,7 +20,7 @@ class MyWrapper:
         return self.value == other
 
 
-class MyAutoField(models.CharField):
+class MyWrapperField(models.CharField):
 
     def __init__(self, *args, **kwargs):
         kwargs['max_length'] = 10
@@ -58,3 +58,31 @@ class MyAutoField(models.CharField):
         if isinstance(value, MyWrapper):
             return str(value)
         return value
+
+
+class MyIntWrapper:
+    def __init__(self, value):
+        self.value = value
+
+    def __repr__(self):
+        return "<%s: %s>" % (self.__class__.__name__, self.value)
+
+    def __int__(self):
+        return self.value
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.value == other.value
+        return self.value == other
+
+
+class MyAutoField(models.BigAutoField):
+    def from_db_value(self, value, expression, connection):
+        if value is None:
+            return None
+        return MyIntWrapper(value)
+
+    def get_prep_value(self, value):
+        if value is None:
+            return None
+        return int(value)

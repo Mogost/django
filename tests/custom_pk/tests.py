@@ -1,7 +1,8 @@
 from django.db import IntegrityError, transaction
-from django.test import TestCase, skipIfDBFeature
+from django.test import TestCase, skipIfDBFeature, skipUnlessDBFeature
 
-from .models import Bar, Business, Employee, Foo
+from .fields import MyIntWrapper
+from .models import AutoModel, Bar, Business, Employee, Foo
 
 
 class BasicCustomPKTests(TestCase):
@@ -230,3 +231,13 @@ class CustomPKTests(TestCase):
         with self.assertRaises(IntegrityError):
             with transaction.atomic():
                 Employee.objects.create(first_name="Tom", last_name="Smith")
+
+    def test_auto_field_subclass_create(self):
+        instance = AutoModel.objects.create()
+        self.assertIsInstance(instance.id, MyIntWrapper)
+
+    @skipUnlessDBFeature('can_return_rows_from_bulk_insert')
+    def test_auto_field_subclass_bulk_create(self):
+        instance = AutoModel()
+        AutoModel.objects.bulk_create([instance])
+        self.assertIsInstance(instance.id, MyIntWrapper)
