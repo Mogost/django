@@ -2,6 +2,7 @@
 import argparse
 import atexit
 import copy
+import gc
 import os
 import shutil
 import socket
@@ -52,6 +53,12 @@ warnings.filterwarnings(
     'MemcachedCache is deprecated',
     category=RemovedInDjango41Warning,
 )
+
+# Disable garbage collection to improve performance.
+# This only prevents collection of objects with cyclic references, which are a
+# minority. Use gc.set_threshold(0) instead of gc.disable() since sometimes
+# libraries use gc.disable() then gc.enable() around critical blocks.
+gc.set_threshold(0)
 
 RUNTESTS_DIR = os.path.abspath(os.path.dirname(__file__))
 
