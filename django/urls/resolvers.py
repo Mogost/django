@@ -371,6 +371,9 @@ class URLPattern:
         callback = self.callback
         if isinstance(callback, functools.partial):
             callback = callback.func
+        if hasattr(callback, "view_class"):
+            klass = callback.view_class
+            return f'{klass.__module__}.{klass.__qualname__}'
         if not hasattr(callback, '__name__'):
             return callback.__module__ + "." + callback.__class__.__name__
         return callback.__module__ + "." + callback.__qualname__
